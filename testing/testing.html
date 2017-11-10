@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Project Testing</title>
+
+  <!-- <link href="https://fonts.googleapis.com/css?family=Fredericka+the+Great" rel="stylesheet"> -->
+
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css"> -->
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <script
+  src="https://code.jquery.com/jquery-3.2.1.js"
+  integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+  crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+  <script type="text/javascript" src="story.js"></script>
+</head>
+
+
+
+<body>
+  <div id="buttons">
+    <button id="topic" data-topic="topic">Topic</button>
+    <button id="sound" data-sound="sound">Sound </button>
+  </div>
+
+  <div id="gifs-appear-here">
+  </div>
+
+  
+ 
+
+  
+  <script type="text/javascript">
+  
+  $(document).on("click", "#topic", function() {
+
+  //identify vars to pull data from the story//
+  var newGif = stories[0].pageStart.topic;
+  console.log(newGif);
+
+  var queryURL = "https://api.giphy.com/v1/gifs/random?tag=" + newGif + "&rating=g&api_key=NfjGwXVTVCgEGMawDPEr5a6iJRkDaNTJ"
+
+      $.ajax({
+          url: queryURL,
+          method: "GET"
+        })
+        .done(function(response) {
+          var results = response.data;
+          console.log(response);
+          // var gifDiv = $("<div class='storyDiv'>");
+          var storyImage =  $("<img>");
+            // $(selector).attr(attribute,value)
+            storyImage.attr("class", "gif");
+            //set data-state to still by default
+            storyImage.attr("data-state", "still");
+
+            storyImage.attr("src", results.fixed_height_small_still_url);
+            storyImage.attr("data-animate", results.image_original_url); 
+            storyImage.attr("data-still", results.fixed_height_small_still_url);
+            // gifDiv.prepend(storyImage);
+
+            $("#gifs-appear-here").append(storyImage);
+            console.log(storyImage);
+          });
+       
+       $(document).on("click", ".gif", function() {
+        // make a variable named state and then store the image's data-state into it. Use the .attr() method for this.
+        var state = $(this).attr("data-state");
+
+            console.log(state);
+       
+        // Check if the variable state is equal to 'still',
+        // then update the src attribute of this image to it's data-animate value, and update the data-state attribute to 'animate'.
+
+        // If state is equal to 'animate', then update the src attribute of this
+        // image to it's data-still value and update the data-state attribute to 'still'
+        
+        if(state === "still") {
+          var animateURL = $(this).attr("data-animate");
+          $(this).attr("src", animateURL);
+          $(this).attr("data-state", "animate");
+        }
+
+        else {
+          var stillURL = $(this).attr("data-still");
+          $(this).attr("src", stillURL);
+            $(this).attr("data-state", "still");
+        }
+
+      });
+     });
+
+
+  var stories;
+  var newSound = stories[0].pageStart.sound;
+  console.log(newSound);
+//connecting sound to sound button
+ 
+ $(document).on("click", "#sound", function() { 
+  
+     
+  var sound = $(this).attr("data-sound");
+  var queryURL = "https://freesound.org/apiv2/search/text/?query="+newSound+"&filter=type:mp3&sort=duration_asc&token=0dLPbWt3qJbyxXWL3lfGKUHW575Bv5ThsCxITVEW";
+  
+  var queryURL2 = "https://freesound.org/apiv2/sounds/51715/"; 
+
+      $.ajax({
+          url: queryURL,
+          method: "GET"
+        })
+        .done(function(response) {
+          var results = response.data;
+          console.log(response)
+        });
+
+
+
+          // for (var i = 0; i < results.length; i++) {
+          //   var storySound = newButtonSound;
+          //   newButtonSound.attr()
+       
+      $.ajax({
+      url: queryURL2,
+      method: "GET",
+      headers: {"Authorization": "Token JkKEUZNbmrCvQMQGlaW9OaKdash40HKv1a4Tl5Cm"}
+      })
+      .done(function(response) {
+        var results = response.previews;
+        console.log(results["preview-hq-mp3"]);
+
+        //create audio element and assign it to a variable
+        var storySound = document.createElement("Audio");
+        
+        //attribute the sound file
+        storySound.setAttribute("src", results["preview-hq-mp3"]);
+
+        storySound.load();
+
+        storySound.play();        
+    });
+  });
+
+
+  </script>
+</body>
+
+</html>
